@@ -5,6 +5,8 @@ import { rateLimit } from 'express-rate-limit';
 import { authRoutes } from './modules/auth/routes.js';
 import { AuthService } from './modules/auth/service.js';
 import { userRoutes, followRoutes } from './modules/users/routes.js';
+import { postRoutes } from './modules/posts/routes.js';
+import { commentRoutes } from './modules/comments/routes.js';
 import { SmtpMailer, type Mailer } from './utils/mailer.js';
 import { send } from './utils/response.js';
 import { notFound, errorHandler } from './middleware/errors.js';
@@ -24,6 +26,8 @@ export function createApp(mailer: Mailer = new SmtpMailer()) {
   app.use('/api/auth', limit(100), authRoutes(new AuthService(mailer)));
   app.use('/api/users', limit(500), userRoutes());
   app.use('/api/follows', limit(500), followRoutes());
+  app.use('/api/posts', limit(500), postRoutes());
+  app.use('/api/comments', limit(500), commentRoutes());
   app.use(notFound); app.use(errorHandler);
   return app;
 }
