@@ -1,0 +1,10 @@
+﻿import assert from 'node:assert/strict';
+const headers={'User-Agent':'Social-App-Repository-Verification','Accept':'application/vnd.github+json'};
+const root='https://api.github.com/repos/Cmoahmed/social-app';
+const r=await fetch(root+'/git/trees/main?recursive=1',{headers});if(!r.ok)throw Error('GitHub API HTTP '+r.status);const tree=await r.json();
+const paths=tree.tree.filter(e=>e.type==='blob').map(e=>e.path);
+for(const p of ['README.md','.env.example','tsconfig.json','tsconfig.build.json','package.json','package-lock.json','docs/QUESTION_MAP.md','docs/SETUP_AND_TESTING.md','docs/TEST_RESULTS.md','postman/SocialApp_Assignment.postman_collection.json','postman/SocialApp_Local.postman_environment.json'])assert(paths.includes(p),'Missing '+p);
+for(const prefix of ['src/','tests/','course-examples/'])assert(paths.some(p=>p.startsWith(prefix)));
+assert(!paths.some(p=>p==='.env'||/^(node_modules|dist|\.npm-cache|local-run)\//.test(p)));
+const readme=await fetch(root+'/readme',{headers});assert.equal(readme.status,200);
+console.log(JSON.stringify({remoteTreeSha:tree.sha,files:paths.length,requiredFilesPresent:true,readmeVisible:true,excludedFilesAbsent:true},null,2));
